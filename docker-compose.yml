@@ -1,0 +1,70 @@
+version: "3.2"
+services:
+#  gateway:
+#    container_name: gateway
+#    build: ./gateway
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - connect4
+  db:
+    container_name: db
+    image: postgres:latest
+#    depends_on:
+#      - gateway
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: connect4
+      POSTGRES_USER: connect4
+      POSTGRES_DB: connect4
+    networks:
+      - connect4
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    depends_on:
+      - db
+    networks:
+      - connect4
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "partida"
+    networks:
+      - connect4
+#  server:
+#    container_name: server
+#    build: ./connect4-back
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db
+#    networks:
+#      - connect4
+#  client:
+#    container_name: client
+#    build: ./connect-4-front
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - server
+#    networks:
+#      - connect4
+networks:
+  connect4:
+    driver: bridge
