@@ -2,6 +2,7 @@ package com.bosonit.formacion.connect4back;
 
 import com.bosonit.formacion.connect4back.application.ApplicationService;
 import com.bosonit.formacion.connect4back.model.Board;
+import com.bosonit.formacion.connect4back.model.BoardHist;
 import com.bosonit.formacion.connect4back.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,10 @@ import java.util.UUID;
 public class Controllers {
     @Autowired
     ApplicationService applicationService;
+    @Autowired
+    KafkaMessageService kafkaMessageService;
+    @Autowired
+    KafkaProducerService kafkaProducerService;
     @PostMapping("/newPlayer")
     @ResponseStatus(HttpStatus.OK)
     public Mono<Player> createPlayer (@RequestParam String name, ServerWebExchange exchange){
@@ -58,5 +63,29 @@ public class Controllers {
                         return ResponseEntity.status(HttpStatus.OK).build();
                     }
                 });
+    }
+    @GetMapping("/getAllBoardHist")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<BoardHist> getBoardHist(@RequestParam int pageNumber){
+        return applicationService.getBoardHist(pageNumber);
+    }
+    @GetMapping("/getOneBoardHist")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<BoardHist> getOneBoardHist (@RequestParam UUID id) {
+        return applicationService.getOneBoardHist(id);
+    }
+    @GetMapping("/latestMessage")
+    public ResponseEntity<String> getLatestKafkaMessage() {
+        String latestMessage = kafkaMessageService.getLatestMessage();
+        if (latestMessage != null) {
+            return ResponseEntity.ok(latestMessage);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/deleteLatestMessage")
+    public void deleteLatestMessage() {
+        kafkaProducerService.deleteMessage();
     }
 }

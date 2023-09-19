@@ -1,0 +1,36 @@
+.createPlayer {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #d56aa0;
+}
+.cardPlayer {
+    width: 70%;
+    padding: 5%;
+    margin: auto;
+    color: #fcf0cc !important;
+    background-color: #435058 !important;
+    box-shadow: 0px 0px 20px #435058;
+}
+.formPlayer {
+    font-size: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    min-height: 300px;
+}
+.buttonPlayer {
+    background-color: #ED7D3A !important;
+    font-size: 20px !important;
+    max-width: 100px;
+    border: 1px solid transparent !important;
+}
+.buttonPlayer:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 20px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 1px solid white !important;
+}

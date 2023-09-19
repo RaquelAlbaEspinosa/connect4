@@ -9,6 +9,7 @@ export const Connect4Provider = (props) => {
     const [playerNumber, setPlayerNumber] = useState(0);
     const [board, setBoard] = useState();
     const [game, setGame] = useState();
+    const [appReady, setAppReady] = useState(false);
 
     useEffect(() => {
         const player = getLocalStorage("player");
@@ -18,12 +19,14 @@ export const Connect4Provider = (props) => {
         setPlayer(JSON.parse(player));
         setPlayerNumber(JSON.parse(playerNumber));
         setBoard(JSON.parse(board));
+
+        setAppReady(true);
     }, []);
 
     return (
         <Connect4Context.Provider
             value = {{player, setPlayer, board, setBoard, game, setGame, playerNumber, setPlayerNumber}}>
-                {props.children}
+                {appReady ? props.children : null}
         </Connect4Context.Provider>
     );
 };

@@ -1,0 +1,27 @@
+.menu {
+    height: 100vh;
+    background-color: #d56aa0;
+    padding: 0 3%;
+}
+.menuButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3%;
+}
+.menuButton > button {
+    background-color: #ED7D3A;
+    width: 70%;
+    min-width: 300px;
+    height: 70%;
+    min-height: 50px;
+    font-size: 30px;
+    font-weight: 500;
+    border: 3px solid #fcf0cc !important;
+}
+.menuButton > button:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 20px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 3px solid white !important;
+}

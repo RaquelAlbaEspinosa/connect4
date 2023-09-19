@@ -1,5 +1,7 @@
 package com.bosonit.formacion.connect4back.application;
 
+import com.bosonit.formacion.connect4back.KafkaMessageService;
+import com.bosonit.formacion.connect4back.KafkaProducerService;
 import com.bosonit.formacion.connect4back.model.BoardHist;
 import com.bosonit.formacion.connect4back.model.BoardStates;
 import com.bosonit.formacion.connect4back.model.Board;
@@ -10,7 +12,6 @@ import com.bosonit.formacion.connect4back.repositories.PlayerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,13 +23,15 @@ import java.util.UUID;
 @Service
 public class ApplicationServiceImpl implements ApplicationService{
     @Autowired
-    PlayerRepository playerRepository;
+    private PlayerRepository playerRepository;
     @Autowired
-    BoardRepository boardRepository;
+    private BoardRepository boardRepository;
     @Autowired
-    BoardHistRepository boardHistRepository;
+    private BoardHistRepository boardHistRepository;
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaMessageService kafkaMessageService;
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
 
     ObjectMapper mapper = new ObjectMapper();
     @Override
@@ -39,8 +42,8 @@ public class ApplicationServiceImpl implements ApplicationService{
 
     @Override
     public Flux<Board> getActiveBoards(int pageNumber) {
-        int offset = (pageNumber - 1) * 5;
-        return boardRepository.findAllPaginated(5, offset);
+        int offset = (pageNumber - 1) * 4;
+        return boardRepository.findAllPaginated(4, offset);
     }
 
     @Override
@@ -53,6 +56,11 @@ public class ApplicationServiceImpl implements ApplicationService{
 
             return boardRepository.save(board1).flatMap(savedBoard -> {
                 p.setBoardId(savedBoard.getBoardId());
+                try {
+                    kafkaProducerService.sendMessage(mapper.writeValueAsString(savedBoard));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
                 return playerRepository.save(p).map(player -> savedBoard);
             });
         });
@@ -68,9 +76,24 @@ public class ApplicationServiceImpl implements ApplicationService{
                             b.setPlayer2Ip(p.getIpPlayer());
                             b.setStates(BoardStates.START);
                             playerRepository.save(p).subscribe();
+                            try {
+                                kafkaProducerService.sendMessage(mapper.writeValueAsString(b));
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
                             return b;
                         }))
                 .flatMap(boardRepository::save);
+    }
+    @Override
+    public Flux<BoardHist> getBoardHist(int pageNumber) {
+        int offset = (pageNumber - 1) * 4;
+        return boardHistRepository.findAllPaginated(4, offset);
+    }
+
+    @Override
+    public Mono<BoardHist> getOneBoardHist (UUID id){
+        return boardHistRepository.findById(id);
     }
 
     @Override
@@ -81,15 +104,37 @@ public class ApplicationServiceImpl implements ApplicationService{
 
                     if(column == -1) {
                         if(b.getPlayer2Name() == null){
-                            return boardRepository.delete(b).thenReturn(201);
+                            return boardRepository.delete(b).thenReturn(201)
+                                    .doOnSuccess(r -> {
+                                try {
+                                    String message = mapper.writeValueAsString(b);
+                                    System.out.println("Mensaje de Kafka!!!!!: " + message);
+                                    if (message != null && !message.isEmpty()) {
+                                        kafkaProducerService.sendMessage(message);
+                                    }
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         } else {
-                        String winner = (player == 1) ? b.getPlayer2Name() : b.getPlayer1Name();
-                        b.setStates((player == 1) ? BoardStates.WINNER2 : BoardStates.WINNER1);
-                        return boardRepository.save(b)
-                                .thenReturn(201)
-                                .flatMap(result -> boardHistRepository.save(new BoardHist(b.getPlayer1Name(), b.getPlayer1Ip(),
-                                                b.getPlayer2Name(), b.getPlayer2Ip(), winner, b.getMovement()))
-                                        .then(boardRepository.delete(b)).thenReturn(201));
+                            String winner = (player == 1) ? b.getPlayer2Name() : b.getPlayer1Name();
+                            b.setStates((player == 1) ? BoardStates.WINNER2 : BoardStates.WINNER1);
+                            return boardRepository.save(b)
+                                    .thenReturn(201)
+                                    .flatMap(result -> boardHistRepository.save(new BoardHist(b.getPlayer1Name(), b.getPlayer1Ip(),
+                                                    b.getPlayer2Name(), b.getPlayer2Ip(), winner, b.getMovement()))
+                                            .thenReturn(201))
+                                    .doOnSuccess(r -> {
+                                try {
+                                    String message = mapper.writeValueAsString(b);
+                                    System.out.println("Mensaje de Kafka!!!!!: " + message);
+                                    if (message != null && !message.isEmpty()) {
+                                        kafkaProducerService.sendMessage(message);
+                                    }
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         }
                     }
 
@@ -109,21 +154,47 @@ public class ApplicationServiceImpl implements ApplicationService{
                                 .thenReturn(201)
                                 .flatMap(result -> boardHistRepository.save(new BoardHist(b.getPlayer1Name(), b.getPlayer1Ip(),
                                                 b.getPlayer2Name(), b.getPlayer2Ip(), winner, b.getMovement()))
-                                        .then(boardRepository.delete(b)).thenReturn(201));
+                                        .thenReturn(201))
+                                .doOnSuccess(r -> {
+                            try {
+                                String message = mapper.writeValueAsString(b);
+                                System.out.println("Mensaje de Kafka!!!!!: " + message);
+                                if (message != null && !message.isEmpty()) {
+                                    kafkaProducerService.sendMessage(message);
+                                }
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                     } else if (checkDraw(board)) {
                         b.setStates(BoardStates.DRAW);
                         return boardRepository.save(b)
                                 .thenReturn(201)
                                 .flatMap(result -> boardHistRepository.save(new BoardHist(b.getPlayer1Name(), b.getPlayer1Ip(),
                                                 b.getPlayer2Name(), b.getPlayer2Ip(), "", b.getMovement()))
-                                        .then(boardRepository.delete(b)).thenReturn(201));
+                                        .thenReturn(201))
+                                .doOnSuccess(r -> {
+                                    try {
+                                        String message = mapper.writeValueAsString(b);
+                                        System.out.println("Mensaje de Kafka!!!!!: " + message);
+                                        if (message != null && !message.isEmpty()) {
+                                            kafkaProducerService.sendMessage(message);
+                                        }
+                                    } catch (JsonProcessingException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
                     } else {
                         b.setTurn(!b.isTurn());
                         return boardRepository.save(b)
                                 .thenReturn(200)
                                 .doOnSuccess(result -> {
                                     try {
-                                        kafkaTemplate.send("partida", mapper.writeValueAsString(b));
+                                        String message = mapper.writeValueAsString(b);
+                                        System.out.println("Mensaje de Kafka!!!!!: " + message);
+                                        if (message != null && !message.isEmpty()) {
+                                            kafkaProducerService.sendMessage(message);
+                                        }
                                     } catch (JsonProcessingException e) {
                                         throw new RuntimeException(e);
                                     }

@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(value = "boardhist")
 public class BoardHist {
     @Id
-    private String boardHistId;
+    private UUID boardHistId;
     @Column(value = "player1_name")
     private String player1Name;
     @Column(value = "player1_ip")
@@ -27,6 +28,7 @@ public class BoardHist {
     @Column(value = "winner_name")
     private String winnerName;
     private String movement;
+    @Column("date")
     private LocalDateTime date;
 
     public BoardHist(String player1Name, String player1Ip, String player2Name, String player2Ip, String winnerName, String movement) {

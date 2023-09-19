@@ -1,9 +1,10 @@
 import { useContext } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Connect4Context } from "../context/Connect4Context";
 import axios from "axios";
 import { saveLocalStorage } from "../localStorage/localStorage";
+import "./menu.css";
 
 export const Menu = () => {
     const navigate = useNavigate();
@@ -24,10 +25,16 @@ export const Menu = () => {
       };
       console.log(player);
   return (
-    <>
-      <Button onClick={() => {createBoard()}}>CREAR PARTIDA</Button>
-      <Button onClick={() => navigate(`/games`)}>PARTIDAS EN CURSO</Button>
-      <Button onClick={() => navigate(`/hist`)}>HISTÓRICO DE PARTIDAS</Button>
-    </>
+    <Row className="menu mx-0">
+      <Col xs={12} className="menuButton">
+        <Button onClick={() => {createBoard()}}>CREAR PARTIDA</Button>
+      </Col>
+      <Col xs={12} className="menuButton">
+        <Button onClick={() => navigate(`/games`)}>PARTIDAS EN CURSO</Button>
+      </Col>
+      <Col xs={12} className="menuButton">
+        <Button onClick={() => navigate(`/hist`)}>HISTÓRICO DE PARTIDAS</Button>
+      </Col>
+    </Row>
   );
 };

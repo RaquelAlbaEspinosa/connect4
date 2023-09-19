@@ -1,11 +1,15 @@
+:root {
+  --drop-height: 480px;
+}
 body{
     min-height: 100vh;
+    background-color: #d56aa0 !important;
 }
 .celda{
     height: 80px;
     width: 80px;
     background-color: blue;
-    border: 2px solid rgba(0, 3, 161, 0.575);
+    background: radial-gradient(circle at center 40px, transparent, transparent 31px, blue 31px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,11 +22,76 @@ body{
     width: 80%;
     height: 80%;
     border-radius: 50%;
-    background-color: white;
+    border: 2px solid rgba(0, 3, 161, 0.575);
 }
 .player1 {
     background-color: red;
 }
 .player2 {
     background-color: yellow;
+}
+.surrenderBtn{
+    background-color: #ED7D3A !important;
+    border: 2px solid #fcf0cc !important;
+}
+.surrenderBtn:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 10px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 2px solid white !important;
+}
+.names {
+    color: #435058;
+    padding: 20px;
+}
+.modal-content {
+    background-color: #435058 !important;
+    color: #fcf0cc !important;
+}
+
+
+
+.chip {
+  z-index: -1;
+  border-radius: 50%;
+  height: 64px;
+  width: 64px;
+  bottom: 0;
+  left: 0;
+}
+
+.ficha0.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha1.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha2.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha3.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha4.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha5.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+.ficha6.player-drop {
+  display: block;
+  animation: drop 0.5s linear;
+}
+
+@keyframes drop {
+  0% { transform: translateY(0px); }
+  75% { transform: translateY(var(--drop-height)); }
+  85% { transform: translateY(calc(var(--drop-height) - 60px)); }
+  100% { transform: translateY(var(--drop-height)); }
 }

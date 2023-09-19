@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS boardhist (
     player2_ip VARCHAR(255),
     winner_name VARCHAR(255),
     movement VARCHAR(255),
-    date DATE
+    date TIMESTAMP
 );

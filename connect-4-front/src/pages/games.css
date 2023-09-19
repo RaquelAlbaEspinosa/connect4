@@ -1,0 +1,56 @@
+.games {
+    padding: 5%;
+    min-height: 100vh;
+    background-color: #d56aa0;
+}
+.games > h1 {
+    color: #435058;
+    padding: 3% 0;
+}
+
+.cardGames{
+    padding: 3%;
+    width: 100%;
+    height: 30vh !important;
+    text-align: center;
+    background-color: #fcf0cc !important;
+}
+
+.cardGames > .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    color: #435058;
+}
+
+.cardGames > .card-body > button{
+    background-color: #ED7D3A !important;
+    border: 2px solid transparent !important;
+}
+
+.cardGames > .card-body > button:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 10px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 2px solid white !important;
+}
+
+.buttonsGames{
+    display: flex;
+    justify-content: space-evenly;
+    padding: 5%;
+}
+.buttonsGames > button {
+    background-color: #ED7D3A !important;
+    width: 10%;
+    min-width: 100px;
+    font-size: 20px;
+    font-weight: 500;
+    border: 2px solid #fcf0cc !important;
+}
+.buttonsGames > button:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 10px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 2px solid white !important;
+}

@@ -1,0 +1,93 @@
+.home {
+    height: 100vh;
+    width: 100vw;
+    background-color: #d56aa0;;
+    color: #435058;
+    padding: 10% 0;
+}
+.homeCol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.homeButton {
+    height: 120px;
+    width: 300px;
+    font-size: 30px !important;
+    font-weight: 500 !important;
+    background-color: #ED7D3A !important;
+    z-index: 1;
+    border: 3px solid #fcf0cc !important;
+}
+.homeButton > p {
+  margin: 0;
+}
+.homeButton:hover{
+    background-color: #00A878 !important;
+    box-shadow: 0px 0px 100px #fcf0cc !important;
+    box-sizing: border-box;
+    border: 3px solid white !important;
+}
+.title{
+    z-index: 1;
+    font-size: 70px;
+    font-weight: 700;
+    text-shadow: 4px 0px 0px #ED7D3A, 0px 4px 0px #ED7D3A,
+    -4px 0px 0px #ED7D3A, 0px -4px 0px #ED7D3A,
+    0px 0px 20px white;
+}
+
+*,*:after,*:before{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.home{
+	background-size: cover;
+	background-position: center bottom; 
+	overflow: hidden;
+	position: relative;
+}
+
+.snow, .snow:before, .snow:after {
+  position: absolute;
+  top: -650px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-image: 
+  radial-gradient(40px 40px at 100px 50px, yellow 98%, transparent), 
+  radial-gradient(60px 60px at 200px 150px, red 98%, transparent), 
+  radial-gradient(30px 30px at 300px 250px, yellow 98%, transparent), 
+  radial-gradient(40px 40px at 400px 350px, red 98%, transparent), 
+  radial-gradient(60px 60px at 500px 100px, yellow 98%, transparent), 
+  radial-gradient(30px 30px at 50px 200px, red 98%, transparent), 
+  radial-gradient(40px 40px at 150px 300px, yellow 98%, transparent), 
+  radial-gradient(60px 60px at 250px 400px, red 98%, transparent), 
+  radial-gradient(30px 30px at 350px 500px, yellow 98%, transparent);
+  background-size: 650px 650px;
+  animation: snow 3s linear infinite;
+  content: "";
+}
+
+.snow:after {
+  margin-left: -250px;
+  filter: blur(1px);
+  animation-duration: 6s;
+  animation-direction: reverse;
+}
+
+.snow:before {
+    margin-left: -350px;
+  filter: blur(1px);
+  animation-duration: 9s;
+  animation-direction: reverse;
+}
+
+@keyframes snow {
+  to {
+    transform: translateY(650px);
+  }
+}
